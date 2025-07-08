@@ -1,0 +1,46 @@
+{
+  "content": [
+    { "type": "text", "text": "QERY STORE", "align": "center", "style": "b" },
+    { "type": "text", "text": "123 Main Street", "align": "center" },
+    { "type": "text", "text": "+509 1234-5678", "align": "center" },
+    { "type": "line" },
+    { "type": "text", "text": "Receipt: 1001" },
+    { "type": "text", "text": "Date: 07/07/2025" },
+    { "type": "text", "text": "Time: 3:45 PM" },
+    { "type": "text", "text": "Cashier: Staff" },
+    { "type": "line" },
+    { "type": "text", "text": "2x Cheeseburger @ 5.50", "align": "left" },
+    { "type": "text", "text": "11.00", "align": "right" },
+    { "type": "text", "text": "1x Fries @ 2.75", "align": "left" },
+    { "type": "text", "text": "2.75", "align": "right" },
+    { "type": "text", "text": "1x Coca-Cola @ 2.50", "align": "left" },
+    { "type": "text", "text": "2.50", "align": "right" },
+    { "type": "line" },
+    { "type": "text", "text": "Subtotal:", "align": "left" },
+    { "type": "text", "text": "16.25", "align": "right" },
+    { "type": "text", "text": "Tax (12%):", "align": "left" },
+    { "type": "text", "text": "1.98", "align": "right" },
+    { "type": "line" },
+    { "type": "text", "text": "TOTAL:", "align": "left", "style": "b" },
+    { "type": "text", "text": "18.23", "align": "right", "style": "b" },
+    { "type": "line" },
+    { "type": "text", "text": "Payment: Cash" },
+    { "type": "line" },
+    {
+      "type": "text",
+      "text": "Merci de votre visite !",
+      "align": "center",
+      "style": "b"
+    },
+    { "type": "text", "text": "Veuillez conserver ce reçu", "align": "center" },
+    { "type": "text", "text": "pour archive", "align": "center" },
+    {
+      "type": "text",
+      "text": "Revenez nous voir bientôt !",
+      "align": "center"
+    },
+    { "type": "text", "text": "" },
+    { "type": "text", "text": "||||| |||| | |||| |||||", "align": "center" },
+    { "type": "cut" }
+  ]
+}
