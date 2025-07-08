@@ -1,0 +1,11 @@
+{
+    "printerType": "windows",
+    "printerName": "POS58 Printer",
+    "printerIP": "",
+    "usb": {
+      "idVendor": 1155,
+      "idProduct": 22304
+    },
+    "serialPort": "",
+    "businessName": "Qery Store"
+  }

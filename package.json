@@ -1,0 +1,22 @@
+{
+    "name": "pos-printer",
+    "version": "1.0.0",
+    "description": "POS printer server",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "escpos": "^3.0.0-alpha.6",
+        "escpos-network": "^3.0.0-alpha.5",
+        "escpos-usb": "^3.0.0-alpha.4",
+        "express": "^5.1.0",
+        "printer": "^0.4.0",
+        "usb": "^1.9.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.22"
+    }
+}
