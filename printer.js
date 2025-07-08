@@ -103,8 +103,8 @@ function printWindows(content, order) {
           break;
         case "cut":
           lines.push(""); // espace avant coupe
-          lines.push(""); // espace
-          lines.push(""); // espace
+          // lines.push(""); // espace
+          // lines.push(""); // espace
           lines.push(""); // aide à bien sortir le papier
           lines.push("\n\n\n");
           break;
@@ -112,7 +112,7 @@ function printWindows(content, order) {
     });
   } else {
     // Fallback format if content is not array
-    lines.push(config.businessName || "POS");
+    lines.push(order.businessName || config.businessName || "POS");
     lines.push("---------------------------");
     order.items?.forEach((i) =>
       lines.push(`${i.qty}x ${i.name} @ ${i.price?.toFixed(2) || "0.00"}`)
@@ -123,8 +123,8 @@ function printWindows(content, order) {
     lines.push("Merci de votre visite !");
     lines.push(""); // espace avant coupe
     lines.push(""); // espace
-    lines.push(""); // espace
-    lines.push(""); // aide à bien sortir le papier
+    // lines.push(""); // espace
+    // lines.push(""); // aide à bien sortir le papier
   }
 
   const rawText = lines.join("\r\n"); // Use \r\n for Windows printers

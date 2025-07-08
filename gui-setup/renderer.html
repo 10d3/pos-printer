@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>POS Printer Config Setup</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      #main {
+        max-width: 400px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 24px 32px 32px 32px;
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      form label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        font-size: 1rem;
+      }
+      form input[type="text"],
+      form input[type="number"] {
+        flex: 1;
+        margin-left: 12px;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      form input[type="checkbox"] {
+        margin-left: 12px;
+        transform: scale(1.2);
+      }
+      form select {
+        flex: 1;
+        margin-left: 12px;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      form textarea {
+        flex: 1;
+        margin-left: 12px;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        resize: vertical;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: #0078d7;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 12px;
+      }
+      button:hover {
+        background: #005fa3;
+      }
+      #status {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 1rem;
+        color: #007700;
+      }
+      #status.error {
+        color: #c00;
+      }
+      #scan-btn {
+        margin-bottom: 16px;
+        background: #444;
+      }
+      #printers-list ul {
+        margin: 0 0 8px 0;
+        padding-left: 20px;
+      }
+      #printers-list li {
+        margin-bottom: 4px;
+      }
+      #printers-list button {
+        width: auto;
+        padding: 2px 8px;
+        font-size: 0.95em;
+        margin-left: 8px;
+        background: #0078d7;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <h2>POS Printer Config Setup</h2>
+      <button id="scan-btn" type="button">Scan for USB Printers</button>
+      <div id="printers-list"></div>
+      <div id="form-container">
+        <p>Loading config editor...</p>
+      </div>
+      <div id="status"></div>
+    </div>
+    <script>
+      const { ipcRenderer } = require('electron');
+
+      async function scanPrinters() {
+        const printersDiv = document.getElementById('printers-list');
+        printersDiv.textContent = "Scanning...";
+        const result = await ipcRenderer.invoke('find-printers');
+        if (result.error) {
+          printersDiv.innerHTML = `<span style="color:#c00;">Error: ${result.error}</span>`;
+          return;
+        }
+        if (!result.length) {
+          printersDiv.textContent = "No USB printers found.";
+          return;
+        }
+        printersDiv.innerHTML = "<b>Found Printers:</b><ul>";
+        result.forEach((printer, idx) => {
+          printersDiv.innerHTML += `<li>
+            idVendor: <code>${printer.idVendor}</code>,
+            idProduct: <code>${printer.idProduct}</code>
+            <button type=\"button\" onclick=\"selectPrinter(${printer.idVendor},${printer.idProduct})\">Use</button>
+          </li>`;
+        });
+        printersDiv.innerHTML += "</ul>";
+      }
+
+      function selectPrinter(idVendor, idProduct) {
+        // Find the usb textarea and set its value
+        const usbField = document.querySelector('textarea[name="usb"]');
+        if (usbField) {
+          usbField.value = JSON.stringify({ idVendor, idProduct }, null, 2);
+        }
+      }
+      window.selectPrinter = selectPrinter; // Make it accessible from HTML
+
+      function getInputType(key, value) {
+        if (key === "printerType") return "select";
+        if (typeof value === "boolean") return "checkbox";
+        if (typeof value === "object" && value !== null) return "json";
+        if (!isNaN(value) && value !== "" && value !== null && key !== "printerName" && key !== "serialPort" && key !== "printerIP" && key !== "businessName") return "number";
+        return "text";
+      }
+
+      function parseValue(type, value, checked) {
+        if (type === "checkbox") return checked;
+        if (type === "number") return Number(value);
+        if (type === "json") {
+          try {
+            return JSON.parse(value);
+          } catch {
+            return value; // fallback, will show error on save
+          }
+        }
+        return value;
+      }
+
+      async function loadConfig() {
+        const config = await ipcRenderer.invoke('get-config');
+        const statusDiv = document.getElementById('status');
+        statusDiv.textContent = "";
+        if (config.error) {
+          document.getElementById('form-container').innerHTML = `<p>Error: ${config.error}</p>`;
+          statusDiv.className = "error";
+          statusDiv.textContent = config.error;
+          return;
+        }
+        let formHtml = '<form id="configForm">';
+        for (const key in config) {
+          const value = config[key];
+          const type = getInputType(key, value);
+          formHtml += `<label>${key}: `;
+          if (type === "select") {
+            formHtml += `<select name="printerType">
+              <option value="windows"${value === "windows" ? " selected" : ""}>Windows</option>
+              <option value="serial"${value === "serial" ? " selected" : ""}>Serial</option>
+              <option value="usb"${value === "usb" ? " selected" : ""}>USB</option>
+              <option value="network"${value === "network" ? " selected" : ""}>Network</option>
+            </select>`;
+          } else if (type === "checkbox") {
+            formHtml += `<input name="${key}" type="checkbox" ${value ? "checked" : ""} />`;
+          } else if (type === "json") {
+            formHtml += `<textarea name="${key}" rows="4" style="width:100%;">${typeof value === "string" ? value : JSON.stringify(value, null, 2)}</textarea>`;
+          } else {
+            formHtml += `<input name="${key}" type="${type}" value="${value}" />`;
+          }
+          formHtml += `</label>`;
+        }
+        formHtml += '<button type="submit">Save</button></form>';
+        document.getElementById('form-container').innerHTML = formHtml;
+
+        document.getElementById('configForm').onsubmit = async (e) => {
+          e.preventDefault();
+          const form = e.target;
+          const newConfig = {};
+          for (const el of form.elements) {
+            if (!el.name) continue;
+            let type = el.type;
+            if (el.tagName.toLowerCase() === "select") type = "select";
+            if (el.tagName.toLowerCase() === "textarea") type = "json";
+            newConfig[el.name] = parseValue(type, el.value, el.checked);
+          }
+          // Validate JSON fields
+          for (const el of form.elements) {
+            if (el.tagName && el.tagName.toLowerCase() === "textarea" && el.name) {
+              try {
+                JSON.parse(el.value);
+              } catch (err) {
+                statusDiv.className = "error";
+                statusDiv.textContent = `Invalid JSON in "${el.name}": ${err.message}`;
+                return;
+              }
+            }
+          }
+          const result = await ipcRenderer.invoke('save-config', newConfig);
+          if (result.success) {
+            statusDiv.className = "";
+            statusDiv.textContent = "Config saved!";
+          } else {
+            statusDiv.className = "error";
+            statusDiv.textContent = "Error: " + result.error;
+          }
+        };
+      }
+
+      loadConfig();
+      document.getElementById('scan-btn').onclick = scanPrinters;
+    </script>
+  </body>
+</html>

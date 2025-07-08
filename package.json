@@ -2,10 +2,25 @@
     "name": "pos-printer",
     "version": "1.0.0",
     "description": "POS printer server",
-    "main": "server.js",
+    "main": "gui-setup/main.js",
+    "build": {
+        "appId": "com.mynexora.posprinter",
+        "directories": {
+            "buildResources": "assets"
+        },
+        "files": [
+            "gui-setup/**/*",
+            "config.json"
+        ],
+        "win": {
+            "target": "portable"
+        }
+    },
     "scripts": {
         "start": "node server.js",
-        "dev": "nodemon server.js"
+        "dev": "nodemon server.js",
+        "gui-setup": "electron ./gui-setup/main.js",
+        "dist": "electron-builder"
     },
     "dependencies": {
         "cors": "^2.8.5",
@@ -17,6 +32,8 @@
         "usb": "^1.9.2"
     },
     "devDependencies": {
+        "electron": "^37.2.0",
+        "electron-builder": "^26.0.12",
         "nodemon": "^2.0.22"
     }
 }
