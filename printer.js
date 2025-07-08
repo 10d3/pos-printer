@@ -4,8 +4,8 @@ const escpos = require('escpos');
 escpos.USB = require('escpos-usb');
 escpos.Network = require('escpos-network');
 escpos.SerialPort = require('escpos-serialport');
-const printerLib = require('printer');
-const SerialPort = require('serialport');
+const { exec } = require('child_process');
+const os = require('os');
 
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
 
@@ -85,7 +85,7 @@ function printEscpos(content, order, device) {
 function printWindows(content, order) {
   const lines = [];
 
-  if (Array.isArray(content) && content.length) {
+  if (Array.isArray(content)) {
     content.forEach(item => {
       switch (item.type) {
         case 'text':
@@ -111,12 +111,14 @@ function printWindows(content, order) {
 
   const text = lines.join('\n');
 
-  printerLib.printDirect({
-    data: text,
-    printer: config.printerName,
-    type: 'RAW',
-    success: jobID => console.log(`Windows print job sent: ${jobID}`),
-    error: err => console.error('Windows print error:', err)
+  // Write to a temporary file
+  const filePath = path.join(os.tmpdir(), `receipt_${Date.now()}.txt`);
+  fs.writeFileSync(filePath, text);
+
+  // Send to printer using Notepad (or Powershell alternative)
+  exec(`notepad /p "${filePath}"`, err => {
+    if (err) console.error('Failed to print:', err);
+    else console.log('Print job sent successfully');
   });
 }
 
