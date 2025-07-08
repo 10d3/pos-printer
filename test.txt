@@ -1,0 +1,43 @@
+1B 40                           // ESC @ (Initialize)
+1B 61 01                        // ESC a 1 (Center align)
+1B 45 01                        // ESC E 1 (Bold ON)
+ARTISAN CAFÉ 0A                 // Store name + LF
+1B 45 00                        // ESC E 0 (Bold OFF)
+123 Main Street 0A              // Address + LF
+Downtown, NY 10001 0A           // City + LF
+(555) 123-4567 0A               // Phone + LF
+1B 61 00                        // ESC a 0 (Left align)
+0A                              // Line feed
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+Receipt: R-2024-001247 0A
+Date: Jan 06, 2025 0A
+Time: 2:34 PM 0A
+Cashier: Sarah M. 0A
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+2x Espresso @ $3.50              $7.00 0A
+1x Croissant @ $4.25             $4.25 0A
+1x Cappuccino @ $4.75            $4.75 0A
+1x Blueberry Muffin @ $3.95      $3.95 0A
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+Subtotal:                       $19.95 0A
+Tax (9.0%):                      $1.80 0A
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+1B 45 01                        // Bold ON
+TOTAL:                          $21.75 0A
+1B 45 00                        // Bold OFF
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+Payment: Card ****4532 0A
+2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 0A
+1B 61 01                        // Center align
+1B 45 01                        // Bold ON
+Thank you for your visit! 0A
+1B 45 00                        // Bold OFF
+Please keep this receipt 0A
+for your records 0A
+0A                              // Empty line
+Visit us again soon! 0A
+0A                              // Empty line
+||||| |||| | |||| ||||| 0A      // Barcode representation
+1B 61 00                        // Left align
+0A 0A 0A                        // 3 line feeds
+1B 6D                           // ESC m (Cut paper)
