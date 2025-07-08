@@ -110,15 +110,20 @@ function printWindows(content, order) {
   }
 
   const text = lines.join('\n');
+  const tempPath = path.join(os.tmpdir(), `receipt_${Date.now()}.txt`);
+  fs.writeFileSync(tempPath, text);
 
-  // Write to a temporary file
-  const filePath = path.join(os.tmpdir(), `receipt_${Date.now()}.txt`);
-  fs.writeFileSync(filePath, text);
+  // You can set printerName here or fetch from config
+  const printerName = config.printerName || 'POS58 Printer';
 
-  // Send to printer using Notepad (or Powershell alternative)
-  exec(`notepad /p "${filePath}"`, err => {
-    if (err) console.error('Failed to print:', err);
-    else console.log('Print job sent successfully');
+  const powershellCmd = `powershell -ExecutionPolicy Bypass -File "./raw-print.ps1" -PrinterName "${printerName}" -FilePath "${tempPath}"`;
+
+  exec(powershellCmd, (err, stdout, stderr) => {
+    if (err) {
+      console.error('Print failed:', err);
+    } else {
+      console.log('Printed to Windows printer:', stdout);
+    }
   });
 }
 
