@@ -7,5 +7,3 @@ node_modules
 
 /node_modules
 /dist
-/gui-setup/node_modules
-/*.exe
