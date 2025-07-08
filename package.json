@@ -1,6 +1,6 @@
 {
     "name": "pos-printer",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "POS printer server",
     "main": "gui-setup/main.js",
     "build": {
