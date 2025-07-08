@@ -13,3 +13,6 @@ curl -X POST http://localhost:3000/print \
     { "type": "cut" }
   ]
 }'
+
+Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -like 'USB*' }
+Get-PnpDeviceProperty -KeyName DEVPKEY_Device_HardwareIds -InstanceId "YOUR_USB_INSTANCE_ID"
