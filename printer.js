@@ -100,29 +100,28 @@ function printWindows(content, order) {
       }
     });
   } else {
-    lines.push('');
-    lines.push('     ' + (config.businessName || 'POS'));
+    // Fallback format if content is not array
+    lines.push(config.businessName || 'POS');
     lines.push('---------------------------');
-    order.items?.forEach(i => lines.push(`${i.qty}x ${i.name}`));
+    order.items?.forEach(i =>
+      lines.push(`${i.qty}x ${i.name} @ ${i.price?.toFixed(2) || '0.00'}`)
+    );
     lines.push('---------------------------');
-    lines.push(`Total: $${order.total?.toFixed(2) || ''}`);
+    lines.push(`Total: $${order.total?.toFixed(2) || '0.00'}`);
     lines.push('');
+    lines.push('Merci de votre visite !');
   }
 
-  const text = lines.join('\n');
-  const tempPath = path.join(os.tmpdir(), `receipt_${Date.now()}.txt`);
-  fs.writeFileSync(tempPath, text);
+  const rawText = lines.join('\r\n'); // Use \r\n for Windows printers
+  const filePath = path.join(os.tmpdir(), `receipt_${Date.now()}.txt`);
+  fs.writeFileSync(filePath, rawText, { encoding: 'ascii' });
 
-  // You can set printerName here or fetch from config
-  const printerName = config.printerName || 'POS58 Printer';
-
-  const powershellCmd = `powershell -ExecutionPolicy Bypass -File "./raw-print.ps1" -PrinterName "${printerName}" -FilePath "${tempPath}"`;
-
-  exec(powershellCmd, (err, stdout, stderr) => {
+  // Send file to LPT1 using raw copy command
+  exec(`copy /B "${filePath}" LPT1`, (err, stdout, stderr) => {
     if (err) {
-      console.error('Print failed:', err);
+      console.error('❌ Failed to print to LPT1:', err);
     } else {
-      console.log('Printed to Windows printer:', stdout);
+      console.log('✅ Receipt sent to LPT1');
     }
   });
 }
