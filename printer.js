@@ -1,11 +1,27 @@
 const fs = require("fs");
 const path = require("path");
-const escpos = require("escpos");
-escpos.USB = require("escpos-usb");
-escpos.Network = require("escpos-network");
-escpos.SerialPort = require("escpos-serialport");
 const { exec } = require("child_process");
 const os = require("os");
+
+// Lazy-load escpos modules to avoid crashes on Windows with Bun
+let escpos = null;
+let escposLoaded = false;
+
+function loadEscpos() {
+  if (!escposLoaded) {
+    try {
+      escpos = require("escpos");
+      escpos.USB = require("escpos-usb");
+      escpos.Network = require("escpos-network");
+      escpos.SerialPort = require("escpos-serialport");
+      escposLoaded = true;
+    } catch (error) {
+      console.error("Failed to load escpos modules:", error.message);
+      throw new Error("Printer modules not available");
+    }
+  }
+  return escpos;
+}
 
 const config = JSON.parse(
   fs.readFileSync(path.join(__dirname, "config.json"), "utf-8")
@@ -16,7 +32,8 @@ async function printOrder(payload) {
 
   switch (config.printerType) {
     case "usb": {
-      const usbDevice = new escpos.USB(
+      const esc = loadEscpos();
+      const usbDevice = new esc.USB(
         config.usb?.idVendor,
         config.usb?.idProduct
       );
@@ -24,11 +41,13 @@ async function printOrder(payload) {
     }
     case "network": {
       if (!config.printerIP) throw new Error("Missing printerIP");
-      return printEscpos(content, order, new escpos.Network(config.printerIP));
+      const esc = loadEscpos();
+      return printEscpos(content, order, new esc.Network(config.printerIP));
     }
     case "serial": {
       if (!config.serialPort) throw new Error("Missing serialPort");
-      const serial = new escpos.SerialPort(config.serialPort, {
+      const esc = loadEscpos();
+      const serial = new esc.SerialPort(config.serialPort, {
         baudRate: 9600,
       });
       return printEscpos(content, order, serial);
@@ -44,7 +63,8 @@ async function printOrder(payload) {
 
 function printEscpos(content, order, device) {
   return new Promise((resolve, reject) => {
-    const printer = new escpos.Printer(device);
+    const esc = loadEscpos();
+    const printer = new esc.Printer(device);
     device.open((error) => {
       if (error) return reject(error);
 

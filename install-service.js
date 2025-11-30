@@ -1,16 +1,28 @@
 const Service = require("node-windows").Service;
+const path = require("path");
 
 const svc = new Service({
   name: "POS Printer Server",
   description: "POS Printer Server running as a background service",
-  script: "C:\\Program Files\\POSPrinterServer\\pos-server.exe",
-  // If you want to pass args, use: script: '...', args: ['--your-arg']
-  // If you want to run as a specific user, add: user: { account: 'username', password: 'password' }
+  script: path.join(__dirname, "server.js"),
+  nodeOptions: ["--harmony", "--max_old_space_size=4096"],
+  env: {
+    name: "NODE_ENV",
+    value: "production",
+  },
 });
 
 svc.on("install", () => {
-  console.log("Service installed!");
+  console.log("Service installed successfully!");
   svc.start();
+});
+
+svc.on("alreadyinstalled", () => {
+  console.log("Service is already installed.");
+});
+
+svc.on("error", (err) => {
+  console.error("Service error:", err);
 });
 
 svc.install();
